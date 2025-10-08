@@ -82,6 +82,15 @@ class EnhancedMinimalMarketABM:
             
         return residents
     
+    def get_seasonal_factor(self):
+        """
+        获取季节因子，用于计算超市损耗率
+        示例：基于月份的正弦函数变化，范围0.8-1.2
+        """
+        month = self.current_day % 12  # 按天数取模得到月份（0-11）
+        seasonal_factor = 1.0 + 0.2 * np.sin(month * np.pi / 6)  # 季节性波动
+        return seasonal_factor
+    
     def _record_interaction(self, agent_type1, agent_id1, agent_type2, agent_id2, interaction_type):
         """
         记录智能体间交互
@@ -98,8 +107,8 @@ class EnhancedMinimalMarketABM:
         """
         daily_metrics = {
             'total_demand': 0,
-            'total_spoilage': 0,
-            'total_revenue': 0,
+            'total_spoilage': self.supermarket.daily_spoilage,  # 取当日损耗
+            'total_revenue': self.supermarket.daily_revenue,   # 取当日营收
             'avg_satisfaction': 0,
             'groupbuy_volume': 0
         }
