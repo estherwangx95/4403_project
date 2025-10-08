@@ -109,14 +109,15 @@ class ComplexityMetrics:
             return 0
             
         try:
+            ts_array = np.array(time_series)
             differences = []
-            max_lag = min(10, len(time_series)//2)
+            max_lag = min(10, len(ts_array)//2)
             
             for i in range(1, max_lag):
-                if i >= len(time_series):
+                if i >= len(ts_array):
                     continue
                 # 计算不同时间滞后的差异
-                diff = np.abs(time_series[i:] - time_series[:-i])
+                diff = np.abs(ts_array[i:] - ts_array[:-i])
                 differences.append(np.mean(diff))
             
             if len(differences) < 2:
@@ -167,3 +168,4 @@ class ComplexityMetrics:
             metric: values[-1] if values else 0
             for metric, values in self.metrics_history.items()
         }
+
