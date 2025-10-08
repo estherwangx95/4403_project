@@ -1,4 +1,3 @@
-# src/agents/supermarket_agent.py
 import numpy as np
 
 class SupermarketAgent:
@@ -19,8 +18,10 @@ class SupermarketAgent:
         # 状态变量
         self.inventory_level = capacity * 0.8  # 初始库存
         self.daily_demand = 0
-        self.total_spoilage = 0
-        self.revenue = 0
+        self.daily_spoilage = 0  # 新增：仅记录当日损耗
+        self.daily_revenue = 0   # 新增：仅记录当日营收
+        self.total_spoilage = 0  # 累计总损耗
+        self.revenue = 0         # 累计总营收
         
         # 策略参数
         self.base_price = 10.0  # 基础价格
@@ -42,8 +43,7 @@ class SupermarketAgent:
         actual_sales = min(demand_quantity, self.inventory_level)
         self.inventory_level -= actual_sales
         self.daily_demand += actual_sales
-        self.revenue += actual_sales * self.base_price
-        
+        self.daily_revenue += actual_sales * self.base_price  # 累加到当日营收
         return actual_sales
     
     def process_groupbuy_order(self, total_quantity, negotiated_price):
@@ -52,8 +52,7 @@ class SupermarketAgent:
         """
         actual_sales = min(total_quantity, self.inventory_level)
         self.inventory_level -= actual_sales
-        self.revenue += actual_sales * negotiated_price
-        
+        self.daily_revenue += actual_sales * negotiated_price  # 累加到当日营收
         return actual_sales
     
     def update_inventory(self):
@@ -64,7 +63,7 @@ class SupermarketAgent:
         spoilage_rate = self.calculate_spoilage_rate()
         spoilage_amount = self.inventory_level * spoilage_rate
         self.inventory_level -= spoilage_amount
-        self.total_spoilage += spoilage_amount
+        self.daily_spoilage += spoilage_amount  # 累加到当日损耗
         
         # 自动补货逻辑
         if self.inventory_level < self.reorder_point:
@@ -75,4 +74,11 @@ class SupermarketAgent:
         每日运营流程
         """
         self.update_inventory()
-        self.daily_demand = 0  # 重置日需求记录
+        # 汇总当日指标到累计指标
+        self.total_spoilage += self.daily_spoilage
+        self.revenue += self.daily_revenue
+        # 重置当日指标
+        self.daily_demand = 0
+        self.daily_spoilage = 0
+        self.daily_revenue = 0
+    
