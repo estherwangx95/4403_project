@@ -1,4 +1,3 @@
-# src/agents/resident_agent.py
 import numpy as np
 
 class ResidentAgent:
@@ -84,53 +83,55 @@ class ResidentAgent:
             
             groupbuy_prob = np.clip(groupbuy_prob, 0, 0.8)  # 概率上限
             
-            # 决策
+            # 决策：选择团购，传递购买量给团长
             if np.random.random() < groupbuy_prob:
-                self._execute_purchase(groupbuy_price, "groupbuy")
+                purchase_quantity = self._execute_purchase(groupbuy_price, "groupbuy")
+                self.model.leader.add_groupbuy_quantity(purchase_quantity)
                 return "groupbuy"
         
-        # 超市购买决策
+        # 超市购买决策：选择超市，直接触发超市销售
         supermarket_prob = base_probability - (0.1 * self.price_sensitivity)
         supermarket_prob = np.clip(supermarket_prob, 0, 0.6)
         
         if np.random.random() < supermarket_prob:
-            self._execute_purchase(supermarket_price, "supermarket")
+            purchase_quantity = self._execute_purchase(supermarket_price, "supermarket")
+            self.model.supermarket.process_demand(purchase_quantity)
             return "supermarket"
         
         return "no_purchase"
     
     def _execute_purchase(self, price, channel):
         """
-        执行购买行为，更新状态
+        执行购买行为，更新状态（返回购买量供传递）
         """
         purchase_quantity = self.calculate_demand()
         
-        # 更新状态
+        # 更新居民自身状态
         self.inventory_level += purchase_quantity
         self.last_purchase_price = price
         self.days_since_last_purchase = 0
         
-        # 记录历史
+        # 记录购买历史
         self.purchase_history.append({
-            'day': self.model.schedule.time,
+            'day': self.model.current_day,
             'channel': channel,
             'price': price,
             'quantity': purchase_quantity
         })
         
-        # 更新满意度 (价格越低，满意度越高)
+        # 更新满意度（价格越低，满意度越高）
         price_satisfaction = 1 - (price * self.price_sensitivity / 10)
         self.satisfaction_level = 0.7 * self.satisfaction_level + 0.3 * price_satisfaction
         
-        return purchase_quantity
+        return purchase_quantity  # 返回购买量，用于触发超市/团长的营收计算
     
     def step(self):
         """
-        每个时间步执行的行为
+        每个时间步执行的行为：库存消耗 + 满意度衰减
         """
-        # 每日库存消耗
+        # 每日库存自然消耗（消耗当日需求的50%）
         self.inventory_level = max(0, self.inventory_level - self.calculate_demand() * 0.5)
         self.days_since_last_purchase += 1
         
-        # 满意度自然衰减
+        # 满意度每日自然衰减（模拟体验淡化）
         self.satisfaction_level *= 0.98
