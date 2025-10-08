@@ -1,4 +1,3 @@
-# src/agents/group_leader_agent.py
 import numpy as np
 
 class GroupLeaderAgent:
@@ -25,7 +24,22 @@ class GroupLeaderAgent:
         # 性能指标
         self.successful_negotiations = 0
         self.total_volume_organized = 0
-    
+
+        # 新补充初始化团长的位置（和居民位置逻辑一致，随机生成0-10的坐标）
+        self.location = (np.random.uniform(0, 10), np.random.uniform(0, 10))
+        
+        # ==========  新增：统计当日居民主动发起的团购量  ==========
+        self.daily_resident_groupbuy_quantity = 0  # 临时存储当日居民团购量
+
+
+    def add_groupbuy_quantity(self, quantity):
+        """
+        新增：接收居民的团购购买量，累计当日总量
+        由ResidentAgent的make_purchase_decision调用，统计居民主动选择的团购需求
+        """
+        self.daily_resident_groupbuy_quantity += quantity
+
+
     def recruit_members(self, residents):
         """
         招募居民加入团购组
@@ -33,14 +47,16 @@ class GroupLeaderAgent:
         """
         for resident in residents:
             # 简单的距离和满意度筛选
-            distance = np.linalg.norm(
-                np.array(resident.location) - np.array(self.model.leader_location)
-            )
-            if (distance < 5 and 
-                resident.satisfaction_level < 0.7 and 
-                resident not in self.group_members):
+            resident_coord = np.array(resident.location)  # 居民坐标转数组
+            leader_coord = np.array(self.location)        # 团长坐标转数组
+            distance_between = np.linalg.norm(resident_coord - leader_coord)
+            is_close_enough = distance_between < 5
+            is_dissatisfied = resident.satisfaction_level < 0.7
+            is_not_in_group = resident not in self.group_members
+            if is_close_enough and is_dissatisfied and is_not_in_group:
                 self.group_members.append(resident)
-    
+
+
     def negotiate_with_supermarket(self, supermarket):
         """
         与超市议价
@@ -59,24 +75,33 @@ class GroupLeaderAgent:
         
         self.successful_negotiations += 1
         return self.negotiated_price
-    
+
+
     def organize_group_purchase(self, supermarket):
         """
-        组织团购：收集需求、议价、下单
+        组织团购：收集需求（含居民主动团购量）、议价、下单
+        ==========  修改：整合“团长主动收集需求”和“居民主动团购量”  ==========
         """
         if not self.group_members:
+            # 重置当日团购量（避免空组时残留数据）
+            self.daily_resident_groupbuy_quantity = 0
             return 0
         
-        # 收集成员需求
-        total_demand = 0
+        # 1. 收集成员主动发起的团购量（从add_groupbuy_quantity累计的数值）
+        resident_initiated_demand = self.daily_resident_groupbuy_quantity
+        
+        # 2. 收集团长主动统计的成员需求（原有逻辑保留）
+        leader_initiated_demand = 0
         for resident in self.group_members:
-            demand = resident.calculate_demand()
-            total_demand += demand
+            leader_initiated_demand += resident.calculate_demand()
+        
+        # 3. 总需求 = 居民主动团购量 + 团长主动统计量
+        total_demand = resident_initiated_demand + leader_initiated_demand
         
         # 议价
         final_price = self.negotiate_with_supermarket(supermarket)
         
-        # 向超市下单
+        # 向超市下单（用总需求计算实际销量）
         actual_sales = supermarket.process_groupbuy_order(total_demand, final_price)
         
         # 计算佣金
@@ -87,8 +112,12 @@ class GroupLeaderAgent:
         # 分配商品给成员 (简化处理)
         self._distribute_to_members(actual_sales, final_price)
         
+        # ==========  新增：重置当日团购量，避免跨周累计  ==========
+        self.daily_resident_groupbuy_quantity = 0
+        
         return actual_sales
-    
+
+
     def _distribute_to_members(self, total_quantity, price):
         """
         将团购商品分配给成员 (简化版本)
@@ -100,14 +129,18 @@ class GroupLeaderAgent:
             resident.inventory_level += avg_quantity
             resident.last_purchase_price = price
             resident.satisfaction_level = min(1.0, resident.satisfaction_level + 0.1)
-    
+
+
     def step(self):
         """
         团长每日工作流程
         """
-        if self.model.schedule.time % 7 == 0:  # 每周组织一次团购
+        if self.model.current_day % 7 == 0:  # 每周组织一次团购
             supermarket = self.model.supermarket
             self.organize_group_purchase(supermarket)
             
             # 定期招募新成员
+            self.recruit_members(self.model.residents)
+        # ==========  新增：非团购日也持续招募成员（扩大用户基数）  ==========
+        else:
             self.recruit_members(self.model.residents)
