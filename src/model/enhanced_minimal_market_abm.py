@@ -1,9 +1,9 @@
 # src/model/enhanced_minimal_market_abm.py
 import numpy as np
 from collections import defaultdict
-from src.agents.resident_agent import ResidentAgent
-from src.agents.supermarket_agent import SupermarketAgent
-from src.agents.group_leader_agent import GroupLeaderAgent
+from src.agents.ResidentAgent import ResidentAgent
+from src.agents.SupermarketAgent import SupermarketAgent
+from src.agents.GroupLeaderAgent import GroupLeaderAgent
 from src.environment.enhanced_market_environment import EnhancedMarketEnvironment
 from src.metrics.complexity_metrics import ComplexityMetrics
 
