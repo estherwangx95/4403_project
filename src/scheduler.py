@@ -24,8 +24,9 @@ class SocialScheduler:
                 neighbors = consumer.get_neighbors()
                 for fid in neighbors:
                     friend = self.consumers[fid]
-                    friend.trust = min(1.0, friend.trust + 0.05)
-                    print(f"💬 Trust diffusion: C{consumer.id} → C{fid} | new_trust={friend.trust:.2f}")
+                    # 提升信任幅度更大
+                    delta = 0.1 * (1 - friend.trust)
+                    friend.trust = min(1.0, friend.trust + delta)
 
         # 3️⃣ 统计销量
         total_sales = sum([1 for c in self.consumers if c.purchased])

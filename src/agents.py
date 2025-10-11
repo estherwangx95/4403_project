@@ -1,5 +1,6 @@
 # src/agents.py
 import random
+import math
 
 class Consumer:
     def __init__(self, id, trust, price_sensitivity, network):
@@ -11,7 +12,8 @@ class Consumer:
 
     def receive_influence(self, influence, leader_id):
         """根据团长影响力与自身特征决定是否购买"""
-        p = self.trust * influence / (0.5 + self.price_sensitivity)
+        # 更稳定的购买决策概率
+        p = 1 / (1 + math.exp(-5 * (self.trust * influence - 0.5 * self.price_sensitivity)))
         p = min(1, max(0, p))  # 确保在 [0, 1]
         decision = random.random() < p
         if decision:
