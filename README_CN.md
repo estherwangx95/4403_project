@@ -398,17 +398,6 @@ Sugarscape	⚙️ 被动环境更新	资源再生速度
 分析层面	提供可量化输出指标（销量、信任、补贴）以支持敏感性与政策分析
 应用层面	将 ABM 方法拓展到数字零售与社会电商场景（罕见研究方向）
 
-
-⸻
-
-🎓 四、总结陈述（报告可直接引用）
-
-Unlike classic ABM models such as Schelling’s segregation or Game of Life,
-this model does not merely demonstrate pattern emergence from simple rules.
-Instead, it constructs a multi-level adaptive mechanism combining social trust diffusion, leader influence, and platform-level economic feedback.
-Through this integration, the model transcends spatial segregation or local coordination paradigms,
-achieving a novel social-economic co-evolutionary simulation framework that reflects real-world community retail dynamics.
-
 ⸻
 
 ✅ 一句话总结原创性：
