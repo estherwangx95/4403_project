@@ -3,7 +3,7 @@
 # ============================================================
 
 # ---- 🧠 Agent Settings ----
-N_CONSUMERS = 50             # 消费者数量
+N_CONSUMERS = 100             # 消费者数量
 N_LEADERS = 3                # 团长数量
 LEADER_CONNECTION_RATIO = 0.3 # 每个团长覆盖的消费者比例
 
@@ -25,7 +25,6 @@ RANDOM_SEEDS = [10, 20, 30, 40, 50]
 
 # ---- 🎨 Visualization Settings ----
 SAVE_PATH = "../data/"
-GIF_NAME = "trust_diffusion.gif"
 EXPORT_CSV = "validation_output.csv"
 PLOT_COLORS = {
     "sales": "b",
