@@ -1,5 +1,3 @@
-# src/scheduler.py
-import random
 import config
 import numpy as np
 
@@ -11,10 +9,10 @@ class SocialScheduler:
         self.time = 0
 
     def step(self):
-        print(f"\n================= 🕒 Step {self.time} =================")
+        print(f"\n================= Step {self.time} =================")
 
         total_sales = 0
-        # 1️⃣ 团长影响消费者
+        # leaders impact on consumers
         for leader in self.leaders:
             influence = leader.reputation * config.INFLUENCE_STRENGTH
             print(f"👑 Leader {leader.id} promotes with influence={influence:.2f}")
@@ -24,7 +22,7 @@ class SocialScheduler:
                 if consumer.purchased:
                     total_sales += 1
 
-        # 2️⃣ 消费者之间的信任扩散
+        # The spread of trust among consumers
         for consumer in self.consumers:
             if consumer.purchased:
                 for fid in consumer.get_neighbors():
@@ -33,7 +31,7 @@ class SocialScheduler:
                     friend.trust = min(1.0, friend.trust + delta)
 
 
-        # 3️⃣ 统计销量
+        # Count sales volume
         avg_trust = np.mean([c.trust for c in self.consumers])
         subsidy = self.platform.subsidy
 
@@ -41,10 +39,10 @@ class SocialScheduler:
         print(f"💬 Average trust: {avg_trust:.3f}")
         print(f"💰 Current subsidy: {subsidy:.3f}")
 
-        # 4️⃣ 平台更新策略
+        # Platform update strategy
         self.platform.update_policy(total_sales)
 
-        # 5️⃣ 清空购买状态
+        # Empty purchase status
         for consumer in self.consumers:
             consumer.purchased = False
 

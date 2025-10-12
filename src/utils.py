@@ -1,7 +1,4 @@
-# ============================================================
 # utils.py — Unified analysis & visualization utilities
-# Supports Figure 6.3, 6.4, 6.5 auto-save
-# ============================================================
 
 import os, datetime, random
 import numpy as np
@@ -12,14 +9,12 @@ import imageio.v2 as imageio
 import config
 from model import GroupBuyingModel
 
-# === 创建 data 目录 ===
+# === create data path ===
 DATA_DIR = os.path.abspath(os.path.join(os.getcwd(), '..', 'data'))
 os.makedirs(DATA_DIR, exist_ok=True)
 
 
-# ============================================================
-# 🔹 通用保存函数
-# ============================================================
+# save figure
 def save_figure(fig, name_prefix):
     """Save figure with timestamp under /data/ directory"""
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -29,9 +24,7 @@ def save_figure(fig, name_prefix):
     return filepath
 
 
-# ============================================================
-# 🔹 Figure 6.3: System Dynamics Plot
-# ============================================================
+# Figure: System Dynamics Plot
 def plot_system_dynamics(model):
     """Plot the temporal evolution of sales, trust, and subsidy"""
     steps = range(len(model.sales_record))
@@ -40,7 +33,7 @@ def plot_system_dynamics(model):
     subsidy = model.subsidy_record
 
     fig, ax1 = plt.subplots(figsize=(8, 5))
-    ax1.set_title("Figure 6.3: Temporal Dynamics of Sales, Trust, and Subsidy", fontsize=12, weight='bold')
+    ax1.set_title("Figure: Temporal Dynamics of Sales, Trust, and Subsidy", fontsize=12, weight='bold')
     ax1.plot(steps, sales, 'o-', color='blue', label='Total Sales')
     ax1.set_xlabel("Time Step")
     ax1.set_ylabel("Total Sales", color='blue')
@@ -55,13 +48,11 @@ def plot_system_dynamics(model):
     ax1.legend(lines + lines2, labels + labels2, loc='best')
 
     fig.tight_layout()
-    save_figure(fig, "Figure_6_3_Temporal_Dynamics")
+    save_figure(fig, "Figure_Temporal_Dynamics")
     return fig
 
 
-# ============================================================
-# 🔹 Figure 6.4: Stability Test
-# ============================================================
+# Figure: Stability Test
 def run_stability_test(n_runs=5):
     """Run multiple independent simulations to verify stability"""
     print(f"🔁 Running {n_runs} stability simulations...")
@@ -78,7 +69,7 @@ def run_stability_test(n_runs=5):
     steps = range(config.STEPS)
 
     fig, ax = plt.subplots(figsize=(8, 5))
-    ax.set_title("Figure 6.4: Stability Test (Sales Across Multiple Runs)", fontsize=12, weight='bold')
+    ax.set_title("Figure: Stability Test (Sales Across Multiple Runs)", fontsize=12, weight='bold')
     for run in all_sales:
         ax.plot(steps, run, color='lightgray', alpha=0.6)
     ax.plot(steps, avg_sales, color='blue', label='Average Sales', linewidth=2)
@@ -88,13 +79,10 @@ def run_stability_test(n_runs=5):
     ax.legend()
 
     fig.tight_layout()
-    save_figure(fig, "Figure_6_4_Stability_Test")
+    save_figure(fig, "Figure_Stability_Test")
     return fig
 
-
-# ============================================================
-# 🔹 Figure 6.5: Parameter Sensitivity
-# ============================================================
+# Figure: Parameter Sensitivity
 def run_parameter_sensitivity():
     """Parameter sensitivity test for trust diffusion rate"""
     print("🔍 Running parameter sensitivity analysis...")
@@ -112,13 +100,13 @@ def run_parameter_sensitivity():
         results.append((rate, avg_trust))
         ax.plot(range(len(model.avg_trust_record)), model.avg_trust_record, label=f"Rate={rate}")
 
-    ax.set_title("Figure 6.5: Parameter Sensitivity (Trust Diffusion Rate)", fontsize=12, weight='bold')
+    ax.set_title("Figure: Parameter Sensitivity (Trust Diffusion Rate)", fontsize=12, weight='bold')
     ax.set_xlabel("Time Step")
     ax.set_ylabel("Average Trust")
     ax.legend()
 
     fig.tight_layout()
-    save_figure(fig, "Figure_6_5_Parameter_Sensitivity")
+    save_figure(fig, "Figure_Parameter_Sensitivity")
 
     df = pd.DataFrame(results, columns=["Diffusion Rate", "Final Avg Trust"])
     csv_path = os.path.join(DATA_DIR, "parameter_sensitivity.csv")
@@ -128,9 +116,7 @@ def run_parameter_sensitivity():
     return fig
 
 
-# ============================================================
-# 🔹 Export Data
-# ============================================================
+# Export Data
 def export_data(model):
     """Export simulation records as CSV"""
     df = pd.DataFrame({
