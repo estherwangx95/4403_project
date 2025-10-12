@@ -3,7 +3,7 @@
 # ============================================================
 
 # ---- 🧠 Agent Settings ----
-N_CONSUMERS = 30             # 消费者数量
+N_CONSUMERS = 50             # 消费者数量
 N_LEADERS = 3                # 团长数量
 LEADER_CONNECTION_RATIO = 0.3 # 每个团长覆盖的消费者比例
 
@@ -14,7 +14,7 @@ SUBSIDY_DECAY_RATE = 0.95    # 每轮补贴衰减率
 
 # ---- 🤝 Trust Diffusion Parameters ----
 DEFAULT_TRUST_DIFFUSION = 0.05   # 信任传播比例
-INFLUENCE_STRENGTH = 0.1         # 团长影响力强度
+INFLUENCE_STRENGTH = 0.3         # 团长影响力强度
 TRUST_GROWTH_RATE = 0.1          # 信任传播幅度（口碑效应）
 DIFFUSION_RATES = [0.02, 0.05, 0.1, 0.2]  # ← 新增：参数敏感性实验的测试范围
 
