@@ -3,7 +3,7 @@
 # ============================================================
 
 # ---- 🧠 Agent Settings ----
-N_CONSUMERS = 100             # 消费者数量
+N_CONSUMERS = 30             # 消费者数量
 N_LEADERS = 3                # 团长数量
 LEADER_CONNECTION_RATIO = 0.3 # 每个团长覆盖的消费者比例
 
@@ -19,7 +19,7 @@ TRUST_GROWTH_RATE = 0.1          # 信任传播幅度（口碑效应）
 DIFFUSION_RATES = [0.02, 0.05, 0.1, 0.2]  # ← 新增：参数敏感性实验的测试范围
 
 # ---- 🧮 Simulation Settings ----
-STEPS = 30                   # 模拟轮数
+STEPS = 25                   # 模拟轮数
 RUNS = 5                     # 稳定性实验重复次数
 RANDOM_SEEDS = [10, 20, 30, 40, 50]
 

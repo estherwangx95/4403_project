@@ -1,47 +1,43 @@
-# ============================================================
-# scheduler.py — SocialScheduler with Config Integration
-# ============================================================
-
+# src/scheduler.py
 import random
-import config
 
 class SocialScheduler:
-    """
-    调度器：协调团长推广、消费者购买、信任传播与平台反馈。
-    """
     def __init__(self, consumers, leaders, platform):
         self.consumers = consumers
         self.leaders = leaders
         self.platform = platform
+        self.time = 0
 
     def step(self):
-        """执行一次完整调度周期"""
-        total_sales = 0
+        print(f"\n================= 🕒 Step {self.time} =================")
 
-        # === 1️⃣ 团长影响阶段 ===
+        # 1️⃣ 团长影响消费者
         for leader in self.leaders:
-            influence = leader.reputation * config.INFLUENCE_STRENGTH
+            influence = leader.promote()
             for cid in leader.connections:
                 consumer = self.consumers[cid]
-                p = consumer.trust * influence / (1 + consumer.price_sensitivity)
-                consumer.purchased = random.random() < p
-                if consumer.purchased:
-                    total_sales += 1
+                consumer.receive_influence(influence, leader.id)
 
-        # === 2️⃣ 信任传播阶段 ===
+        # 2️⃣ 消费者之间的口碑传播
         for consumer in self.consumers:
             if consumer.purchased:
                 neighbors = consumer.get_neighbors()
-                k = max(1, int(len(neighbors) * config.DEFAULT_TRUST_DIFFUSION))
-                for fid in random.sample(neighbors, k):
+                for fid in neighbors:
                     friend = self.consumers[fid]
-                    delta = config.TRUST_GROWTH_RATE * (1 - friend.trust)
+                    # 提升信任幅度更大 高信任的人传播得更有效
+                    delta = consumer.trust * 0.1 * (1 - friend.trust)
                     friend.trust = min(1.0, friend.trust + delta)
 
-        # === 3️⃣ 平台补贴动态调整 ===
-        self.platform.update_subsidy(total_sales, decay=config.SUBSIDY_DECAY_RATE)
+        # 3️⃣ 统计销量
+        total_sales = sum([1 for c in self.consumers if c.purchased])
+        print(f"📊 Total sales this step: {total_sales}")
 
-        if config.VERBOSE:
-            print(f"💡 Step result: Sales={total_sales}, Subsidy={self.platform.subsidy:.2f}")
+        # 4️⃣ 平台更新策略
+        self.platform.update_policy(total_sales)
 
+        # 5️⃣ 清空购买状态
+        for consumer in self.consumers:
+            consumer.purchased = False
+
+        self.time += 1
         return total_sales
