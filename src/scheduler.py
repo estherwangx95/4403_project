@@ -24,8 +24,8 @@ class SocialScheduler:
                 neighbors = consumer.get_neighbors()
                 for fid in neighbors:
                     friend = self.consumers[fid]
-                    # 提升信任幅度更大
-                    delta = 0.1 * (1 - friend.trust)
+                    # 提升信任幅度更大 高信任的人传播得更有效
+                    delta = self.trust * 0.1 * (1 - friend.trust)
                     friend.trust = min(1.0, friend.trust + delta)
 
         # 3️⃣ 统计销量
