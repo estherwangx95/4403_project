@@ -39,7 +39,7 @@ class Leader:
         """Leader influence"""
         # Linear mapping relationship between reputation and propagation strength: high reputation → strong influence → easier adoption by others → further reputation increase. This conforms to the "Matthew Effect" in reality.
         influence = 0.5 + config.INFLUENCE_STRENGTH * self.reputation
-        print(f"👑 Leader {self.id} promotes with influence={influence:.2f}")
+        print(f" Leader {self.id} promotes with influence={influence:.2f}")
         return influence
 
 
@@ -53,4 +53,4 @@ class Platform:
         self.subsidy *= decay
         if sales < 0.3 * config.N_CONSUMERS:
             self.subsidy += 0.2
-        print(f"🏦 Platform updated: sales={sales}, subsidy={self.subsidy:.2f}")
+        print(f" Platform updated: sales={sales}, subsidy={self.subsidy:.2f}")
