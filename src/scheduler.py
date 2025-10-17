@@ -35,9 +35,9 @@ class SocialScheduler:
         avg_trust = np.mean([c.trust for c in self.consumers])
         subsidy = self.platform.subsidy
 
-        print(f"📊 Total sales this step: {total_sales}")
-        print(f"💬 Average trust: {avg_trust:.3f}")
-        print(f"💰 Current subsidy: {subsidy:.3f}")
+        print(f" Total sales this step: {total_sales}")
+        print(f" Average trust: {avg_trust:.3f}")
+        print(f" Current subsidy: {subsidy:.3f}")
 
         # Platform update strategy
         self.platform.update_policy(total_sales)
